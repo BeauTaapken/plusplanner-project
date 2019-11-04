@@ -11,8 +11,8 @@
     <groupId>plus.planner.api</groupId>
     <artifactId>plusplannerapi</artifactId>
     <version>0.0.1-SNAPSHOT</version>
-    <name>plusplannerapi</name>
-    <description>PlusPlannerAPI</description>
+    <name>plusplannerproject</name>
+    <description>PlusPlannerProject</description>
 
     <properties>
         <java.version>11</java.version>

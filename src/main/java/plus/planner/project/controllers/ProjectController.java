@@ -12,7 +12,7 @@ import java.io.IOException;
 import java.util.List;
 import java.util.stream.Collectors;
 
-@RequestMapping("subpart")
+@RequestMapping("project")
 @RestController
 public class ProjectController {
     @Autowired
@@ -23,24 +23,19 @@ public class ProjectController {
         mapper = new ObjectMapper();
     }
 
-    @RequestMapping(path = "/create/{subpart}")
-    public void createSubPart(@PathVariable String subpart) {
+    @RequestMapping(path = "/create/{project}")
+    public void createProject(@PathVariable String project) {
         try {
-            repo.save(mapper.readValue(subpart, Project.class));
+            repo.save(mapper.readValue(project, Project.class));
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
     @RequestMapping(path = "/read/{projectid}")
-    public List<Project> readSubPart(@PathVariable Long projectid){
+    public List<Project> readProject(@PathVariable Long projectid){
         List<Project> projects = repo.findAll();
         return projects.stream().filter(x -> x.getProjectid() == projectid).collect(Collectors.toList());
-    }
-
-    @RequestMapping(path = "")
-    public List<Project> readAllProjects(){
-        return repo.findAll();
     }
 
     @RequestMapping(path = "/update/{project}")

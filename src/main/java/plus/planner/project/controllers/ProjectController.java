@@ -16,8 +16,8 @@ import java.util.stream.Collectors;
 @RestController
 public class ProjectController {
     @Autowired
-    ProjectRepository repo;
-    ObjectMapper mapper;
+    private ProjectRepository repo;
+    private ObjectMapper mapper;
 
     ProjectController(){
         mapper = new ObjectMapper();

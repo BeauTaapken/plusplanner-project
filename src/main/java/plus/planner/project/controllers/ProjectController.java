@@ -38,10 +38,10 @@ public class ProjectController {
         }
     }
 
-    @RequestMapping(path = "/read/{userid}")
-    public String readProject(@PathVariable Long userid){
+    @RequestMapping(path = "/read/{projectid}")
+    public String readProject(@PathVariable Long projectid){
         List<Project> projects = repo.findAll();
-        projects = projects.stream().filter(x -> x.getProjectid() == userid).collect(Collectors.toList());
+        projects = projects.stream().filter(x -> x.getProjectid() == projectid).collect(Collectors.toList());
         for (Project p :
                 projects) {
             URL url = null;

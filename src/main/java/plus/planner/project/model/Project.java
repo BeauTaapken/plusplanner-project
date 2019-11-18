@@ -4,7 +4,6 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
 
 @Entity
 @Table(name = "project")
@@ -19,11 +18,20 @@ public class Project {
     private String description;
     @NotBlank
     private String enddate;
+    @Transient
+    private String chats;
+    @Transient
+    private String components;
+
 
     public Project() {}
 
     public Long getProjectid() {
         return projectid;
+    }
+
+    public void setProjectid(Long projectid) {
+        this.projectid = projectid;
     }
 
     public String getProjectname() {
@@ -48,5 +56,21 @@ public class Project {
 
     public void setEnddate(String enddate) {
         this.enddate = enddate;
+    }
+
+    public String getChats() {
+        return chats;
+    }
+
+    public void setChats(String chats) {
+        this.chats = chats;
+    }
+
+    public String getComponents() {
+        return components;
+    }
+
+    public void setComponents(String components) {
+        this.components = components;
     }
 }

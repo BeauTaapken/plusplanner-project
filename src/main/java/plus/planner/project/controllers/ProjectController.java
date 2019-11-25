@@ -15,6 +15,7 @@ import java.io.InputStreamReader;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -40,7 +41,11 @@ public class ProjectController {
 
     @RequestMapping(path = "/read/{projectid}")
     public String readProject(@PathVariable Long projectid){
-        List<Project> projects = repo.findAll();
+        List<Project> projects = new ArrayList<>();
+        for (String p :
+                projectids) {
+            projects.add((repo.findById(projectid)).get());
+        }
         projects = projects.stream().filter(x -> x.getProjectid() == projectid).collect(Collectors.toList());
         for (Project p :
                 projects) {

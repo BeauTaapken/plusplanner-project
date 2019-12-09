@@ -1,17 +1,23 @@
 package plus.planner.project.model;
 
+import lombok.*;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
 
+@NoArgsConstructor
+@AllArgsConstructor
+@Getter
+@Setter
+@Data
 @Entity
 @Table(name = "project")
 @EntityListeners(AuditingEntityListener.class)
 public class Project {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long projectid;
+    private String projectid;
     @NotBlank
     private String projectname;
     @NotBlank
@@ -22,55 +28,4 @@ public class Project {
     private String chats;
     @Transient
     private String components;
-
-
-    public Project() {}
-
-    public Long getProjectid() {
-        return projectid;
-    }
-
-    public void setProjectid(Long projectid) {
-        this.projectid = projectid;
-    }
-
-    public String getProjectname() {
-        return projectname;
-    }
-
-    public void setProjectname(String projectname) {
-        this.projectname = projectname;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
-    }
-
-    public String getEnddate() {
-        return enddate;
-    }
-
-    public void setEnddate(String enddate) {
-        this.enddate = enddate;
-    }
-
-    public String getChats() {
-        return chats;
-    }
-
-    public void setChats(String chats) {
-        this.chats = chats;
-    }
-
-    public String getComponents() {
-        return components;
-    }
-
-    public void setComponents(String components) {
-        this.components = components;
-    }
 }

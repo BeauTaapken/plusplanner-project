@@ -13,16 +13,12 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.client.RestTemplate;
 import plus.planner.project.model.Permission;
 import plus.planner.project.model.Project;
 import plus.planner.project.repository.ProjectRepository;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.net.URLConnection;
 import java.security.interfaces.RSAPublicKey;
 import java.util.ArrayList;
 import java.util.List;
@@ -34,9 +30,11 @@ import static plus.planner.project.utils.PemUtils.readPublicKeyFromFile;
 public class ProjectController {
     @Autowired
     private ProjectRepository repo;
+    @Autowired
+    private RestTemplate restTemplate;
     private ObjectMapper objectMapper;
 
-    ProjectController(){
+    ProjectController() {
         this.objectMapper = new ObjectMapper();
     }
 
@@ -50,7 +48,7 @@ public class ProjectController {
     }
 
     @RequestMapping(path = "/read")
-    public String readProject(@RequestHeader("Authorization") String token){
+    public String readProject(@RequestHeader("Authorization") String token) {
         try {
             Algorithm algorithm = Algorithm.RSA512((RSAPublicKey) readPublicKeyFromFile("src/main/resources/PublicKey.pem", "RSA"), null);
             JWTVerifier verifier = JWT.require(algorithm)
@@ -65,63 +63,10 @@ public class ProjectController {
             }
             for (Project p :
                     projects) {
-                URL url = null;
-                URLConnection conn = null;
-                try {
-                    url = new URL("http://localhost:8085/chat/read/" + p.getProjectid());
-                    conn = url.openConnection();
-                } catch (MalformedURLException e) {
-                    e.printStackTrace();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-                BufferedReader br = null;
-                try {
-                    br = new BufferedReader(new InputStreamReader((conn.getInputStream())));
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-                StringBuilder sb = new StringBuilder();
-                String output = null;
-                while (true) {
-                    try {
-                        if (!((output = br.readLine()) != null)) break;
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-                    sb.append(output);
-                }
-                p.setChats(sb.toString());
-            }
-            for (Project p :
-                    projects) {
-                URL url = null;
-                URLConnection conn = null;
-                try {
-                    url = new URL("http://localhost:8082/containerservice/component/read/" + p.getProjectid());
-                    conn = url.openConnection();
-                } catch (MalformedURLException e) {
-                    e.printStackTrace();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-                BufferedReader br = null;
-                try {
-                    br = new BufferedReader(new InputStreamReader((conn.getInputStream())));
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-                StringBuilder sb = new StringBuilder();
-                String output = null;
-                while (true) {
-                    try {
-                        if (!((output = br.readLine()) != null)) break;
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-                    sb.append(output);
-                }
-                p.setComponents(sb.toString());
+                String channel = restTemplate.getForObject("http://plus-planner-channel-service/chat/read/" + p.getProjectid(), String.class);
+                String component = restTemplate.getForObject("http://plus-planner-container-service/containerservice/component/read/" + p.getProjectid(), String.class);
+                p.setChats(channel);
+                p.setComponents(component);
             }
             String json = null;
             try {
@@ -153,7 +98,7 @@ public class ProjectController {
     }
 
     @RequestMapping(path = "/delete/{projectidid}")
-    public void deleteProject(@PathVariable String projectid){
+    public void deleteProject(@PathVariable String projectid) {
         repo.deleteById(projectid);
     }
 }

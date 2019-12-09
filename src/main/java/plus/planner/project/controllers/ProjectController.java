@@ -52,7 +52,7 @@ public class ProjectController {
         try {
             Algorithm algorithm = Algorithm.RSA512((RSAPublicKey) readPublicKeyFromFile("src/main/resources/PublicKey.pem", "RSA"), null);
             JWTVerifier verifier = JWT.require(algorithm)
-                    .withIssuer("data-editor-token-service")
+                    .withIssuer("plus-planner-token-service")
                     .build();
             DecodedJWT jwt = verifier.verify(token.replace("Bearer ", ""));
             Permission[] perms = objectMapper.readValue(((jwt.getClaims()).get("pms")).asString(), Permission[].class);

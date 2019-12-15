@@ -4,7 +4,6 @@ import lombok.*;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import javax.persistence.*;
-import javax.validation.constraints.NotBlank;
 
 @NoArgsConstructor
 @AllArgsConstructor
@@ -18,11 +17,8 @@ public class Project {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private String projectid;
-    @NotBlank
     private String projectname;
-    @NotBlank
     private String description;
-    @NotBlank
     private String enddate;
     @Transient
     private String chats;

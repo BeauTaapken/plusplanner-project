@@ -9,10 +9,9 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestHeader;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestTemplate;
 import plus.planner.project.model.Permission;
 import plus.planner.project.model.Project;
@@ -22,10 +21,11 @@ import java.io.IOException;
 import java.security.interfaces.RSAPublicKey;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 import static plus.planner.project.utils.PemUtils.readPublicKeyFromFile;
 
-@RequestMapping("project")
+@RequestMapping("/project")
 @RestController
 public class ProjectController {
     @Autowired
@@ -38,10 +38,27 @@ public class ProjectController {
         this.objectMapper = new ObjectMapper();
     }
 
-    @RequestMapping(path = "/create/{project}")
-    public void createProject(@PathVariable String project) {
+    @RequestMapping(path = "/create", method = RequestMethod.POST)
+    public void createProject(@RequestBody Project project, @RequestHeader("Authorization") String token) {
+        System.out.println(project.getProjectname());
+        System.out.println(token);
+        System.out.println(restTemplate == null);
         try {
-            repo.save(objectMapper.readValue(project, Project.class));
+            Algorithm algorithm = Algorithm.RSA512((RSAPublicKey) readPublicKeyFromFile("src/main/resources/PublicKey.pem", "RSA"), null);
+            JWTVerifier verifier = JWT.require(algorithm)
+                    .withIssuer("plus-planner-token-service")
+                    .build();
+            DecodedJWT jwt = verifier.verify(token.replace("Bearer ", ""));
+            repo.save(project);
+            System.out.println("{\"roleid\":\"" + UUID.randomUUID().toString() +
+                    "\",\"userid\":\"" + jwt.getClaim("uid").asString() +
+                    "\",\"projectid\":\"" + project.getProjectid() +
+                    "\",\"role\":\"admin\"}");
+            restTemplate.postForObject("http://plus-planner-role-management-service/role/create",
+                    new HttpEntity<>("{\"roleid\":\"" + UUID.randomUUID().toString() +
+                                         "\",\"userid\":\"" + jwt.getClaim("uid").asString() +
+                                      "\",\"projectid\":\"" + project.getProjectid() +
+                                           "\",\"role\":\"admin\"}", new HttpHeaders()), String.class);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -77,6 +94,7 @@ public class ProjectController {
             json = json.replace("\"[", "[");
             json = json.replace("]\"", "]");
             json = json.replace("\\\"", "\"");
+            System.out.println(json);
             return "{\"projects\":" + json + "}";
         } catch (JsonParseException e) {
             e.printStackTrace();

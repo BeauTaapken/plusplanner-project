@@ -23,5 +23,5 @@ public class Project {
     @Transient
     private String chats;
     @Transient
-    private String components;
+    private String parts;
 }

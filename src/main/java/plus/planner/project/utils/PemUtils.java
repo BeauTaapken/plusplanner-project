@@ -22,9 +22,9 @@ public class PemUtils {
         if (!pemFile.isFile() || !pemFile.exists()) {
             throw new FileNotFoundException(String.format("The file '%s' doesn't exist.", pemFile.getAbsolutePath()));
         }
-        PemReader reader = new PemReader(new FileReader(pemFile));
-        PemObject pemObject = reader.readPemObject();
-        byte[] content = pemObject.getContent();
+        final PemReader reader = new PemReader(new FileReader(pemFile));
+        final PemObject pemObject = reader.readPemObject();
+        final byte[] content = pemObject.getContent();
         reader.close();
         return content;
     }
@@ -32,8 +32,8 @@ public class PemUtils {
     private static PublicKey getPublicKey(byte[] keyBytes, String algorithm) {
         PublicKey publicKey = null;
         try {
-            KeyFactory kf = KeyFactory.getInstance(algorithm);
-            EncodedKeySpec keySpec = new X509EncodedKeySpec(keyBytes);
+            final KeyFactory kf = KeyFactory.getInstance(algorithm);
+            final EncodedKeySpec keySpec = new X509EncodedKeySpec(keyBytes);
             publicKey = kf.generatePublic(keySpec);
         } catch (NoSuchAlgorithmException e) {
             System.out.println("Could not reconstruct the public key, the given algorithm could not be found.");
@@ -47,8 +47,8 @@ public class PemUtils {
     private static PrivateKey getPrivateKey(byte[] keyBytes, String algorithm) {
         PrivateKey privateKey = null;
         try {
-            KeyFactory kf = KeyFactory.getInstance(algorithm);
-            EncodedKeySpec keySpec = new PKCS8EncodedKeySpec(keyBytes);
+            final KeyFactory kf = KeyFactory.getInstance(algorithm);
+            final EncodedKeySpec keySpec = new PKCS8EncodedKeySpec(keyBytes);
             privateKey = kf.generatePrivate(keySpec);
         } catch (NoSuchAlgorithmException e) {
             System.out.println("Could not reconstruct the private key, the given algorithm could not be found.");
@@ -61,12 +61,12 @@ public class PemUtils {
     }
 
     public static PublicKey readPublicKeyFromFile(String filepath, String algorithm) throws IOException {
-        byte[] bytes = PemUtils.parsePEMFile(new File(filepath));
+        final byte[] bytes = PemUtils.parsePEMFile(new File(filepath));
         return PemUtils.getPublicKey(bytes, algorithm);
     }
 
     public static PrivateKey readPrivateKeyFromFile(String filepath, String algorithm) throws IOException {
-        byte[] bytes = PemUtils.parsePEMFile(new File(filepath));
+        final byte[] bytes = PemUtils.parsePEMFile(new File(filepath));
         return PemUtils.getPrivateKey(bytes, algorithm);
     }
 }

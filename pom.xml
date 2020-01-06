@@ -8,8 +8,8 @@
         <version>2.1.8.RELEASE</version>
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
-    <groupId>plus.planner.api</groupId>
-    <artifactId>plusplannerapi</artifactId>
+    <groupId>plus.planner.project</groupId>
+    <artifactId>plusplannerproject</artifactId>
     <version>0.0.1-SNAPSHOT</version>
     <name>plusplannerproject</name>
     <description>PlusPlannerProject</description>

@@ -9,6 +9,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestTemplate;
 import plus.planner.project.model.Permission;
@@ -37,18 +38,23 @@ public class ProjectController {
         this.jwtVerifier = jwtVerifier;
     }
 
-    @RequestMapping(path = "/create", method = RequestMethod.POST)
-    public void createProject(@RequestBody Project project, @RequestHeader("Authorization") String token) {
+    @PostMapping(path = "/create")
+    public void createProject(@RequestBody String prj, @RequestHeader("Authorization") String token) throws IOException {
+        final Project project = objectMapper.readValue(prj, Project.class);
         logger.info("verifying token");
         final DecodedJWT jwt = jwtVerifier.verify(token.replace("Bearer ", ""));
         logger.info("saving project: " + project.getProjectid());
         repo.save(project);
+        logger.info("constructing request");
+        final HttpHeaders headers = new HttpHeaders();
+        headers.set("Content Type", "application/json");
+        final HttpEntity<String> entity = new HttpEntity<>("{\"roleid\":\"" + UUID.randomUUID().toString() +
+                "\",\"userid\":\"" + jwt.getClaim("uid").asString() +
+                "\",\"projectid\":\"" + project.getProjectid() +
+                "\",\"role\":\"admin\"}");
         logger.info("creating role");
-        restTemplate.postForObject("http://plus-planner-role-management-service/role/create",
-                new HttpEntity<>("{\"roleid\":\"" + UUID.randomUUID().toString() +
-                        "\",\"userid\":\"" + jwt.getClaim("uid").asString() +
-                        "\",\"projectid\":\"" + project.getProjectid() +
-                        "\",\"role\":\"admin\"}", new HttpHeaders()), String.class);
+        restTemplate.postForObject("https://plus-planner-role-management-service/role/create",
+                entity, String.class);
         logger.info("created project and role");
     }
 
@@ -66,9 +72,9 @@ public class ProjectController {
         for (Project p :
                 projects) {
             logger.info("getting chats for projectid: " + p.getProjectid());
-            p.setChats(restTemplate.getForObject("http://plus-planner-channel-service/chat/read/" + p.getProjectid(), String.class));
+            p.setChats(restTemplate.getForObject("https://plus-planner-channel-service/chat/read/" + p.getProjectid(), String.class));
             logger.info("getting parts for projectid: " + p.getProjectid());
-            p.setParts(restTemplate.getForObject("http://plus-planner-container-service/containerservice/component/read/" + p.getProjectid(), String.class));
+            p.setParts(restTemplate.getForObject("https://plus-planner-container-service/part/read/" + p.getProjectid(), String.class));
         }
         logger.info("constructing json");
         String json = null;

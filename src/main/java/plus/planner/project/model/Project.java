@@ -1,5 +1,6 @@
 package plus.planner.project.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.*;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
@@ -15,7 +16,6 @@ import javax.persistence.*;
 @EntityListeners(AuditingEntityListener.class)
 public class Project {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private String projectid;
     private String projectname;
     private String description;

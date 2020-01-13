@@ -13,12 +13,6 @@ import org.springframework.web.client.RestTemplate;
 @SpringBootApplication
 public class ProjectService {
 
-    @Bean
-    @LoadBalanced
-    public RestTemplate restTemplate(){
-        return  new RestTemplate();
-    }
-
     public static void main(String[] args) {
         SpringApplication.run(ProjectService.class, args);
     }

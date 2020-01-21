@@ -1,6 +1,7 @@
 package plus.planner.project.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonRawValue;
 import lombok.*;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
@@ -21,7 +22,9 @@ public class Project {
     private String description;
     private String enddate;
     @Transient
+    @JsonRawValue
     private String chats;
     @Transient
+    @JsonRawValue
     private String parts;
 }

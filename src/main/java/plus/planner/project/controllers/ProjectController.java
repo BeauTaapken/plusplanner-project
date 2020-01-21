@@ -2,14 +2,12 @@ package plus.planner.project.controllers;
 
 import com.auth0.jwt.interfaces.DecodedJWT;
 import com.auth0.jwt.interfaces.JWTVerifier;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
-import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestTemplate;
 import plus.planner.project.model.Permission;
@@ -59,7 +57,7 @@ public class ProjectController {
     }
 
     @RequestMapping(path = "/read", method = RequestMethod.GET)
-    public String readProject(@RequestHeader("Authorization") String token) throws IOException {
+    public List<Project> readProject(@RequestHeader("Authorization") String token) throws IOException {
         logger.info("verifying token");
         final DecodedJWT jwt = jwtVerifier.verify(token.replace("Bearer ", ""));
         final Permission[] perms = objectMapper.readValue(((jwt.getClaims()).get("pms")).asString(), Permission[].class);
@@ -76,18 +74,8 @@ public class ProjectController {
             logger.info("getting parts for projectid: " + p.getProjectid());
             p.setParts(restTemplate.getForObject("https://plus-planner-container-service/part/read/" + p.getProjectid(), String.class));
         }
-        logger.info("constructing json");
-        String json = null;
-        try {
-            json = objectMapper.writeValueAsString(projects);
-        } catch (JsonProcessingException e) {
-            e.printStackTrace();
-        }
-        json = json.replace("\"[", "[");
-        json = json.replace("]\"", "]");
-        json = json.replace("\\\"", "\"");
-        logger.info("returning json");
-        return "{\"projects\":" + json + "}";
+        logger.info("returning projects");
+        return projects;
     }
 
     @RequestMapping(path = "/update", method = RequestMethod.POST)

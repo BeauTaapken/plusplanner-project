@@ -56,7 +56,7 @@ public class ProjectController {
         logger.info("created project and role");
     }
 
-    @RequestMapping(path = "/read", method = RequestMethod.GET)
+    @GetMapping(path = "/read")
     public List<Project> readProject(@RequestHeader("Authorization") String token) throws IOException {
         logger.info("verifying token");
         final DecodedJWT jwt = jwtVerifier.verify(token.replace("Bearer ", ""));
@@ -78,14 +78,14 @@ public class ProjectController {
         return projects;
     }
 
-    @RequestMapping(path = "/update", method = RequestMethod.POST)
+    @PostMapping(path = "/update")
     public void updateProject(@RequestBody Project project) {
         logger.info("updating prohject: " + project.getProjectid());
         repo.save(project);
         logger.info("updated project");
     }
 
-    @RequestMapping(path = "/delete/{projectidid}")
+    @PostMapping(path = "/delete/{projectidid}")
     public void deleteProject(@PathVariable String projectid) {
         logger.info("deleting project: " + projectid);
         repo.deleteById(projectid);

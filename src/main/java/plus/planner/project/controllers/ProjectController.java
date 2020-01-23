@@ -73,6 +73,8 @@ public class ProjectController {
             p.setChats(restTemplate.getForObject("https://plus-planner-channel-service/chat/read/" + p.getProjectid(), String.class));
             logger.info("getting parts for projectid: " + p.getProjectid());
             p.setParts(restTemplate.getForObject("https://plus-planner-container-service/part/read/" + p.getProjectid(), String.class));
+            logger.info("getting users for projectid");
+            p.setUsers(restTemplate.getForObject("https://plus-planner-role-management-service/user/read/" + p.getProjectid(), String.class));
         }
         logger.info("returning projects");
         return projects;

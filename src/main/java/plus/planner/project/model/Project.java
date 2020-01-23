@@ -27,4 +27,7 @@ public class Project {
     @Transient
     @JsonRawValue
     private String parts;
+    @Transient
+    @JsonRawValue
+    private String users;
 }

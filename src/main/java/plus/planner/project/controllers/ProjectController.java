@@ -49,7 +49,7 @@ public class ProjectController {
         final HttpEntity<String> entity = new HttpEntity<>("{\"roleid\":\"" + UUID.randomUUID().toString() +
                 "\",\"userid\":\"" + jwt.getClaim("uid").asString() +
                 "\",\"projectid\":\"" + project.getProjectid() +
-                "\",\"role\":\"admin\"}");
+                "\",\"role\":\"ADMIN\"}");
         logger.info("creating role");
         restTemplate.postForObject("https://plus-planner-role-management-service/role/create",
                 entity, String.class);
